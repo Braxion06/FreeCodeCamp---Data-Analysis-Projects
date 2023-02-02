@@ -5,8 +5,7 @@ def calculate (list):
     if len(list) != 9:
         raise ValueError('List must contain nine numbers.')
         return
-    flatarray = np.array(list)
-    gridarray = flatarray.reshape((3,3))
+    gridarray = np.array(list).reshape((3,3))
     calculations = {
         'mean': [np.mean(gridarray, axis=0), np.mean(gridarray, axis=1), np.mean(gridarray)], 
         'variance': [np.var(gridarray, axis=0), np.var(gridarray, axis=1), np.var(gridarray)], 
