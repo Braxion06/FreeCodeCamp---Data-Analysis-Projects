@@ -8,12 +8,16 @@ def draw_plot():
 
     # Create scatter plot
     fig, axes = plt.subplots()
-    axes.scatter(df['Year'], df['CSIRO Adjusted Sea Level'], label= 'Sea Level')
+    x = df['Year']
+    y = df['CSIRO Adjusted Sea Level']
+    axes.scatter(x, y, label= 'Sea Level')
 
 
     # Create first line of best fit
-    slope, intercept, r, p, se = linregress(df['Year'], df['CSIRO Adjusted Sea Level'])
-    fit_x1 = pd.Series([df['Year'], 2050])
+    slope, intercept, r, p, se = linregress(x, y)
+    # fit_x1 = df['Year'].copy()
+    # fit_x1 = fit_x1.append(pd.Series([2050]))
+    fit_x1 = pd.Series([i for i in range(1880, 2051)]) 
     fit_y1 = slope * fit_x1 + intercept
     axes.plot(fit_x1, fit_y1, label= 'Best Fit',color= 'b')
 
@@ -21,7 +25,9 @@ def draw_plot():
     slope_2, intercept_2, r_2, p_2, se_2 = linregress(
     df['Year'].loc[df['Year'] >= 2000], 
     df['CSIRO Adjusted Sea Level'].loc[df['Year'] >= 2000])
-    fit_x2 = pd.Series([2000,2050])
+    # fit_x2 = df['Year'][df['Year'] >= 2000].copy()
+    # fit_x2 = fit_x2.append(pd.Series([2050]))
+    fit_x2 = pd.Series([i for i in range(2000, 2051)])
     fit_y2 = slope_2 * fit_x2 + intercept_2
     axes.plot(fit_x2, fit_y2, label= 'New best fit', color='r')
 
