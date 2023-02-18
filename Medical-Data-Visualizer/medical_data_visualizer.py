@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import data
-df = None
+df = pd.read_csv('medical_examination.csv')
 
 # Add 'overweight' column
 df['overweight'] = None
@@ -15,19 +15,31 @@ df['overweight'] = None
 # Draw Categorical Plot
 def draw_cat_plot():
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    df_cat = None
-
-
+    df_cat = pd.read_csv('medical_examination.csv')
     # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
-    df_cat = None
-    
+    # Transform centimeters into meters
+    df_cat['height'] = df_cat['height'] / 100
+    df_cat['bmi'] = df_cat['weight'] / np.power(df_cat['height'],2)
+    df_cat.loc[df_cat['bmi'] > 25, 'overweight'] = 1
+    df_cat.loc[df_cat['bmi'] <= 25, 'overweight'] = 0
+    df_cat.loc[df_cat['cholesterol'] == 1, 'cholesterol'] = 0
+    df_cat.loc[df_cat['gluc'] == 1, 'gluc'] = 0
+    df_cat.loc[df_cat['cholesterol'] > 1, 'cholesterol'] = 1
+    df_cat.loc[df_cat['gluc'] > 1, 'gluc'] = 1
+    columns = ['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight']
+    melted_df_cat = df_cat.melt(id_vars='cardio', value_vars=columns)
+    agg_melted_df_cat = melted_df_cat.groupby(
+    ['cardio', 'variable']).value_counts().reset_index().rename(columns={0:'count'})
+
+
 
     # Draw the catplot with 'sns.catplot()'
-
+    # Make the catplot
+    graph = sns.catplot(data=agg_melted_df_cat, x= 'variable', y= 'count', col= 'cardio', hue= 'value',  kind= 'bar')
 
 
     # Get the figure for the output
-    fig = None
+    fig = graph.fig
 
 
     # Do not modify the next two lines
@@ -38,21 +50,27 @@ def draw_cat_plot():
 # Draw Heat Map
 def draw_heat_map():
     # Clean the data
-    df_heat = None
+    df_heat = pd.read_csv('medical_examination.csv')
+    df_heat = df_heat.loc[
+                    (df_heat['ap_lo'] <= df_heat['ap_hi']) | 
+                    (df_heat['height'] >= df_heat['height'].quantile(0.025)) |
+                    (df_heat['height'] < df_heat['height'].quantile(0.975)) | 
+                    (df_heat['weight'] > df_heat['weight'].quantile(0.025)) | 
+                    (df_heat['weight'] < df_heat['weight'].quantile(0.975))]
+    filtered_df_heat = filtered_df_heat.drop(columns=['bmi'])
 
     # Calculate the correlation matrix
-    corr = None
+    corr = filtered_df_heat.corr()
 
     # Generate a mask for the upper triangle
-    mask = None
-
+    mask = np.triu(np.ones_like(filtered_df_heat.corr(), dtype=bool))
 
 
     # Set up the matplotlib figure
-    fig, ax = None
+    fig, ax = plt.subplots()
 
     # Draw the heatmap with 'sns.heatmap()'
-
+    sns.heatmap(corr, annot=True, mask= mask, fmt= '.1f')
 
 
     # Do not modify the next two lines
